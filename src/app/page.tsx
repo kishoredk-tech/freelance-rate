@@ -49,7 +49,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <main className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
 
         <h1 className="text-2xl font-bold text-center">
@@ -119,6 +119,10 @@ export default function Home() {
           projectPrice={projectPrice}
         />
 
+        <p className="text-xs text-gray-700 text-center">
+          Know a freelancer who undercharges? Share this tool with them.
+        </p>
+
         <a
           href="#"
           className="block text-center bg-black text-white py-2 rounded-lg mt-4 hover:bg-gray-800 transition"
@@ -135,7 +139,7 @@ export default function Home() {
           Reset
         </button>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-700 mt-6">
           Built by Kishore • Made for beginner freelancers
         </p>
 

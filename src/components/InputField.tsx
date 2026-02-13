@@ -18,7 +18,7 @@ export default function InputField({
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-2 border rounded-lg"
+        className="w-full p-2 border border-gray-300 rounded-lg"
       />
     </div>
   );
