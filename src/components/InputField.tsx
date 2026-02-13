@@ -1,21 +1,25 @@
-type InputFieldProps = {
+interface InputFieldProps {
+  label: string;
   value: string;
   onChange: (value: string) => void;
-  placeholder: string;
-};
+}
 
 export default function InputField({
+  label,
   value,
   onChange,
-  placeholder,
 }: InputFieldProps) {
   return (
-    <input
-      type="number"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full p-3 border rounded-lg"
-    />
+    <div>
+      <label className="block mb-1 font-medium">
+        {label}
+      </label>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full p-2 border rounded-lg"
+      />
+    </div>
   );
 }

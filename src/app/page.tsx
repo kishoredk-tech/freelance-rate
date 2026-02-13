@@ -17,7 +17,7 @@ export default function Home() {
   const [projectHours, setProjectHours] = useState("");
 
   // =========================
-  // BUSINESS LOGIC (CORE)
+  // BUSINESS LOGIC
   // =========================
 
   const totalRequired =
@@ -47,10 +47,6 @@ export default function Home() {
     setProjectHours("");
     setBufferPercent(20);
   };
-
-  // =========================
-  // UI
-  // =========================
 
   return (
     <main className="min-h-screen bg-gray-50 py-10 px-4">
@@ -119,7 +115,7 @@ export default function Home() {
         {/* RESULTS */}
         <ResultsCard
           totalRequired={totalRequired}
-          hourlyRate={recommendedHourlyRate}
+          recommendedHourlyRate={recommendedHourlyRate}
           projectPrice={projectPrice}
         />
 
@@ -133,10 +129,7 @@ export default function Home() {
 
       </div>
 
-      {/* ========================= */}
-      {/* NEWSLETTER SECTION */}
-      {/* ========================= */}
-
+      {/* NEWSLETTER */}
       <div className="max-w-xl mx-auto mt-12">
         <SubscribeForm />
       </div>
