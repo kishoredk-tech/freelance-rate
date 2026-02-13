@@ -89,7 +89,7 @@ export default function Home() {
 
           {/* BUFFER SLIDER */}
           <div>
-            <label className="block mb-2 font-medium">
+            <label className="block mb-2 font-semibold teset-gray-800">
               Safety Buffer: {bufferPercent}%
             </label>
             <input
@@ -134,7 +134,7 @@ export default function Home() {
         {/* RESET BUTTON */}
         <button
           onClick={handleReset}
-          className="w-full bg-gray-200 hover:bg-gray-300 py-2 rounded-lg"
+          className="w-full bg-gray-200 hover:bg-gray-300 text-black fond-medium py-2 rounded-lg"
         >
           Reset
         </button>

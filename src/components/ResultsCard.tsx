@@ -15,7 +15,7 @@ export default function ResultsCard({
         <p className="text-sm text-gray-700">
           Total Required Income
         </p>
-        <p className="text-xl font-semibold text-green-600">
+        <p className="text-xl font-bold text-green-600">
           ₹ {totalRequired}
         </p>
       </div>
@@ -24,7 +24,7 @@ export default function ResultsCard({
         <p className="text-sm text-gray-700">
           Recommended Hourly Rate
         </p>
-        <p className="text-2xl font-bold text-blue-600">
+        <p className="text-xl font-bold text-blue-600">
           ₹ {recommendedHourlyRate} / hour
         </p>
       </div>
@@ -33,7 +33,7 @@ export default function ResultsCard({
         <p className="text-sm text-gray-700">
           Suggested Project Price
         </p>
-        <p className="text-lg font-semibold">
+        <p className="text-xl font-bold text-gray-900">
           ₹ {projectPrice}
         </p>
       </div>
