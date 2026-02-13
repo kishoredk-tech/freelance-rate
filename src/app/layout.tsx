@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "FreelanceRate Calculator – LIVE TEST",
+  title: "FreelanceRate – Calculate Your Ideal Freelance Hourly Rate",
   description:
-    "A free tool to calculate your ideal freelance hourly rate and project pricing based on income goals and working hours.",
+    "Free calculator for freelancers to determine ideal hourly rate and project pricing based on income goals and working hours.",
 };
 
 

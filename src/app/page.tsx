@@ -43,9 +43,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg p-8 rounded-2xl shadow-lg space-y-4">
-        <h1 className="text-3xl font-bold text-center mb-4">
-          FreelanceRate Calculator
+        <h1 className="text-3xl font-bold text-center mb-2">
+          Calculate What You Should Charge as a Freelancer
         </h1>
+        <p className="text-sm text-gray-500 text-center mb-6">
+          Stop underpricing your work. Know your real hourly and project rate.
+        </p>
+
 
         <InputField
           value={monthlyIncomeGoal}
@@ -105,6 +109,10 @@ export default function Home() {
         >
           Reset Calculator
         </button>
+        <footer className="mt-10 text-center text-sm text-gray-400">
+          Built by Kishore • Made for beginner freelancers in India
+        </footer>
+
       </div>
     </main>
   );
