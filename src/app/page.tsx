@@ -53,11 +53,11 @@ export default function Home() {
       <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
 
         <h1 className="text-2xl font-bold text-center">
-          Calculate What You Should Charge as a Freelancer
+          Stop Underpricing Your Freelance Work
         </h1>
 
         <p className="text-sm text-gray-600 text-center">
-          Stop underpricing your work. Know your real hourly and project rate.
+          Free calculator to find your ideal freelance hourly rate.
         </p>
 
         {/* INPUTS */}
@@ -119,6 +119,14 @@ export default function Home() {
           projectPrice={projectPrice}
         />
 
+        <a
+          href="#"
+          className="block text-center bg-black text-white py-2 rounded-lg mt-4 hover:bg-gray-800 transition"
+        >
+          Share This Tool
+        </a>
+
+
         {/* RESET BUTTON */}
         <button
           onClick={handleReset}
@@ -126,6 +134,11 @@ export default function Home() {
         >
           Reset
         </button>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Built by Kishore • Made for beginner freelancers
+        </p>
+
 
       </div>
 

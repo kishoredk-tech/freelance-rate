@@ -65,8 +65,17 @@ export default function SubscribeForm() {
       </form>
 
       {message && (
-        <p className="text-sm mt-3 text-center">{message}</p>
+        <p
+          className={`text-sm mt-3 text-center font-medium ${
+            message.includes("Successfully")
+              ? "text-green-600"
+              : "text-red-500"
+          }`}
+        >
+          {message}
+        </p>
       )}
+
     </div>
   );
 }
