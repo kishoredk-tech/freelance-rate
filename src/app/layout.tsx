@@ -14,29 +14,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://freelance-rate-amber.vercel.app"),
-
-  title: "Stop Underpricing Your Freelance Work | Free Rate Calculator",
-
+export const metadata = {
+  title: "Freelance Rate Calculator – Stop Underpricing Your Work",
   description:
-    "Free freelance rate calculator to find your ideal hourly rate and project pricing based on income goals, expenses, and working capacity.",
-
-  keywords: [
-    "freelance rate calculator",
-    "hourly rate calculator",
-    "project pricing tool",
-    "freelancer pricing",
-    "how much should I charge",
-    "freelance hourly rate India",
-  ],
-
-  authors: [{ name: "Kishore Devanga Kothavaru" }],
-
+    "Free freelance rate calculator to find your ideal hourly and project pricing based on income goals, working days, and safety buffer.",
   openGraph: {
-    title: "Stop Underpricing Your Freelance Work",
+    title: "Freelance Rate Calculator – Stop Underpricing Your Work",
     description:
-      "Free calculator to find your ideal freelance hourly rate and project price.",
+      "Free freelance rate calculator to find your ideal hourly and project pricing based on income goals and working capacity.",
     url: "https://freelance-rate-amber.vercel.app",
     siteName: "FreelanceRate",
     images: [
@@ -50,20 +35,14 @@ export const metadata: Metadata = {
     locale: "en_IN",
     type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
-    title: "Stop Underpricing Your Freelance Work",
+    title: "Freelance Rate Calculator – Stop Underpricing Your Work",
     description:
-      "Free calculator to find your ideal freelance hourly rate and project price.",
+      "Find your ideal freelance hourly rate and project price instantly.",
     images: ["/og-image.png"],
   },
-
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
-
 
 
 export default function RootLayout({
