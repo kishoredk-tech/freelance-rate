@@ -52,11 +52,12 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
 
-        <h1 className="text-2xl font-bold text-gray-700 text-center">
+        {/* HEADER */}
+        <h1 className="text-2xl font-bold text-gray-800 text-center">
           Stop Underpricing Your Freelance Work
         </h1>
 
-        <p className="text-sm text-gray-700 text-center">
+        <p className="text-sm text-gray-600 text-center">
           Free calculator to find your ideal freelance hourly rate.
         </p>
 
@@ -119,38 +120,42 @@ export default function Home() {
           projectPrice={projectPrice}
         />
 
-        <p className="text-xs text-gray-700 text-center">
+        {/* MICRO TRIGGER */}
+        <p className="text-sm text-center text-gray-600 mt-2">
+          Want help reaching this rate consistently? Get my pricing framework below 👇
+        </p>
+
+        {/* NEWSLETTER MOVED HERE */}
+        <div className="mt-6">
+          <SubscribeForm />
+        </div>
+
+        {/* SHARE SECTION */}
+        <p className="text-xs text-gray-600 text-center mt-4">
           Know a freelancer who undercharges? Share this tool with them.
         </p>
 
         <a
           href="#"
-          className="block text-center bg-black text-white py-2 rounded-lg mt-4 hover:bg-gray-800 transition"
+          className="block text-center bg-black text-white py-3 rounded-lg mt-3 hover:bg-gray-800 transition font-medium"
         >
           Share This Tool
         </a>
 
-
         {/* RESET BUTTON */}
         <button
           onClick={handleReset}
-          className="w-full bg-gray-200 hover:bg-gray-300 text-black fond-medium py-2 rounded-lg"
+          className="w-full bg-gray-200 hover:bg-gray-300 text-black font-medium py-2 rounded-lg mt-3"
         >
           Reset
         </button>
 
-        <p className="text-center text-sm text-gray-700 mt-6">
+        {/* FOOTER */}
+        <p className="text-center text-sm text-gray-600 mt-6">
           Built by Kishore • Made for beginner freelancers
         </p>
 
-
       </div>
-
-      {/* NEWSLETTER */}
-      <div className="max-w-xl mx-auto mt-12">
-        <SubscribeForm />
-      </div>
-
     </main>
   );
 }

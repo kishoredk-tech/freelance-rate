@@ -37,18 +37,21 @@ export default function SubscribeForm() {
   };
 
   return (
-    <div className="mt-12 p-6 bg-gray-500 rounded-xl max-w-md mx-auto">
+    <div className="mt-12 p-6 bg-gray-200 rounded-xl max-w-md mx-auto">
       <h3 className="text-xl font-semibold mb-2">
-        Stop Underpricing Your Work
+        Want to Earn More From Freelancing?
       </h3>
       <p className="text-sm text-gray-900 mb-4">
-        Get beginner-friendly freelance pricing tips weekly.
+        I share practical pricing strategies, real examples, and beginner-friendly frameworks. No spam.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <p className="text-xs text-gray-900 mt-3">
+          Join 17+ freelancers already using this calculator.
+        </p>
         <input
           type="email"
-          placeholder="Enter your email"
+          placeholder="Enter your best email"
           value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
@@ -60,7 +63,7 @@ export default function SubscribeForm() {
           disabled={loading}
           className="bg-black text-white p-2 rounded"
         >
-          {loading ? "Subscribing..." : "Get Pricing Tips"}
+          {loading ? "Subscribing..." : "Get Free Pricing Guide"}
         </button>
       </form>
 
