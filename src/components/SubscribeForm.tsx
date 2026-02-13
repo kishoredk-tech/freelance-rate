@@ -38,7 +38,7 @@ export default function SubscribeForm() {
 
   return (
     <div className="mt-12 p-6 bg-gray-200 rounded-xl max-w-md mx-auto">
-      <h3 className="text-xl font-semibold mb-2">
+      <h3 className="text-xl font-semibold mb-2 text-black">
         Want to Earn More From Freelancing?
       </h3>
       <p className="text-sm text-gray-900 mb-4">
