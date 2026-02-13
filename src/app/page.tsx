@@ -15,6 +15,7 @@ export default function Home() {
   const [billableHours, setBillableHours] = useState("");
   const [bufferPercent, setBufferPercent] = useState(20);
   const [projectHours, setProjectHours] = useState("");
+  const [shareMessage, setShareMessage] = useState("");
 
   // =========================
   // BUSINESS LOGIC
@@ -46,6 +47,30 @@ export default function Home() {
     setBillableHours("");
     setProjectHours("");
     setBufferPercent(20);
+  };
+
+  // =========================
+  // SHARE FUNCTION
+  // =========================
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "Freelance Rate Calculator",
+      text: "Stop underpricing your freelance work. Calculate your ideal hourly rate instantly.",
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareMessage("Link copied to clipboard!");
+        setTimeout(() => setShareMessage(""), 2000);
+      }
+    } catch (error) {
+      console.error("Sharing failed:", error);
+    }
   };
 
   return (
@@ -125,7 +150,7 @@ export default function Home() {
           Want help reaching this rate consistently? Get my pricing framework below 👇
         </p>
 
-        {/* NEWSLETTER MOVED HERE */}
+        {/* NEWSLETTER */}
         <div className="mt-6">
           <SubscribeForm />
         </div>
@@ -135,12 +160,19 @@ export default function Home() {
           Know a freelancer who undercharges? Share this tool with them.
         </p>
 
-        <a
-          href="#"
-          className="block text-center bg-black text-white py-3 rounded-lg mt-3 hover:bg-gray-800 transition font-medium"
+        <button
+          onClick={handleShare}
+          className="w-full bg-black text-white py-3 rounded-lg mt-3 hover:bg-gray-800 transition font-medium"
         >
           Share This Tool
-        </a>
+        </button>
+
+        {/* Share Success Message */}
+        {shareMessage && (
+          <p className="text-center text-sm text-green-600 mt-2">
+            {shareMessage}
+          </p>
+        )}
 
         {/* RESET BUTTON */}
         <button
