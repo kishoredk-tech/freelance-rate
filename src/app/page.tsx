@@ -3,6 +3,8 @@
 import { useState } from "react";
 import InputField from "@/components/InputField";
 import ResultsCard from "@/components/ResultsCard";
+import EmailCapture from "@/components/EmailCapture";
+
 
 export default function Home() {
   const [monthlyIncomeGoal, setMonthlyIncomeGoal] = useState("");
@@ -109,6 +111,9 @@ export default function Home() {
         >
           Reset Calculator
         </button>
+
+        <EmailCapture />
+
         <footer className="mt-10 text-center text-sm text-gray-400">
           Built by Kishore • Made for beginner freelancers in India
         </footer>
