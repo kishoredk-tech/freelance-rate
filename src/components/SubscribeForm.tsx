@@ -37,11 +37,11 @@ export default function SubscribeForm() {
   };
 
   return (
-    <div className="mt-12 p-6 bg-gray-100 rounded-xl max-w-md mx-auto">
+    <div className="mt-12 p-6 bg-gray-500 rounded-xl max-w-md mx-auto">
       <h3 className="text-xl font-semibold mb-2">
         Stop Underpricing Your Work
       </h3>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-gray-900 mb-4">
         Get beginner-friendly freelance pricing tips weekly.
       </p>
 
@@ -52,7 +52,7 @@ export default function SubscribeForm() {
           value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
-          className="p-2 border rounded"
+          className="p-3 border border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
         />
 
         <button

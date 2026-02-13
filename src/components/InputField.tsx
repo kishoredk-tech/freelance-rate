@@ -1,8 +1,8 @@
-interface InputFieldProps {
+type InputFieldProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
-}
+};
 
 export default function InputField({
   label,
@@ -10,15 +10,16 @@ export default function InputField({
   onChange,
 }: InputFieldProps) {
   return (
-    <div>
-      <label className="block mb-1 font-medium">
+    <div className="space-y-1">
+      <label className="block text-sm font-medium text-gray-800">
         {label}
       </label>
+
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-lg"
+        className="w-full p-3 border border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
       />
     </div>
   );

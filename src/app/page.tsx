@@ -52,11 +52,11 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
 
-        <h1 className="text-2xl font-bold text-center">
+        <h1 className="text-2xl font-bold text-gray-700 text-center">
           Stop Underpricing Your Freelance Work
         </h1>
 
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-gray-700 text-center">
           Free calculator to find your ideal freelance hourly rate.
         </p>
 

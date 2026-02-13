@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Freelance Rate Calculator – Stop Underpricing Your Work",
+  title: "Freelance Rate Calculator India – Stop Underpricing Your Work",
   description:
     "Free freelance rate calculator to find your ideal hourly and project pricing based on income goals, working days, and safety buffer.",
   openGraph: {
