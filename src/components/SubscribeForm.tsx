@@ -24,31 +24,38 @@ export default function SubscribeForm() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("Successfully subscribed!");
+        setMessage("Check your email! Your free pricing framework is on its way 🚀");
         setEmail("");
       } else {
         setMessage(data.error || "Subscription failed");
       }
     } catch {
-      setMessage("Something went wrong");
+      setMessage("Something went wrong. Please try again.");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="mt-12 p-6 bg-gray-200 rounded-xl max-w-md mx-auto">
-      <h3 className="text-xl font-semibold mb-2 text-black">
-        Want to Earn More From Freelancing?
+    <div className="mt-6 p-6 bg-gray-200 rounded-xl max-w-md mx-auto">
+      
+      {/* HEADING */}
+      <h3 className="text-lg font-semibold text-black text-center">
+        Get My Freelance Pricing Framework (Free PDF)
       </h3>
-      <p className="text-sm text-gray-900 mb-4">
-        I share practical pricing strategies, real examples, and beginner-friendly frameworks. No spam.
+
+      {/* DESCRIPTION */}
+      <p className="text-sm text-gray-800 mt-2 text-center">
+        A simple step-by-step system to confidently calculate and charge your ideal freelance rate.
       </p>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <p className="text-xs text-gray-900 mt-3">
-          Join 17+ freelancers already using this calculator.
-        </p>
+      {/* SOCIAL PROOF */}
+      <p className="text-xs text-gray-700 mt-3 text-center">
+        Join 17+ freelancers improving their pricing strategy.
+      </p>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-4">
+        
         <input
           type="email"
           placeholder="Enter your best email"
@@ -61,16 +68,17 @@ export default function SubscribeForm() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-black text-white p-2 rounded"
+          className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
         >
-          {loading ? "Subscribing..." : "Get Free Pricing Guide"}
+          {loading ? "Sending..." : "Send Me The Free PDF"}
         </button>
       </form>
 
+      {/* MESSAGE */}
       {message && (
         <p
           className={`text-sm mt-3 text-center font-medium ${
-            message.includes("Successfully")
+            message.includes("Check your email")
               ? "text-green-600"
               : "text-red-500"
           }`}
@@ -78,7 +86,6 @@ export default function SubscribeForm() {
           {message}
         </p>
       )}
-
     </div>
   );
 }

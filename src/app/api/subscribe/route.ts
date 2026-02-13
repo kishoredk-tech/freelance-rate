@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         email,
         status: "active",
+        groups: ["179267868270004071"],
       }),
     });
 
