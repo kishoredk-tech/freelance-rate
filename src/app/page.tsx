@@ -3,16 +3,22 @@
 import { useState } from "react";
 import InputField from "@/components/InputField";
 import ResultsCard from "@/components/ResultsCard";
-import EmailCapture from "@/components/EmailCapture";
-
+import SubscribeForm from "@/components/SubscribeForm";
 
 export default function Home() {
+  // =========================
+  // STATE
+  // =========================
   const [monthlyIncomeGoal, setMonthlyIncomeGoal] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
   const [workingDays, setWorkingDays] = useState("");
   const [billableHours, setBillableHours] = useState("");
   const [bufferPercent, setBufferPercent] = useState(20);
   const [projectHours, setProjectHours] = useState("");
+
+  // =========================
+  // BUSINESS LOGIC (CORE)
+  // =========================
 
   const totalRequired =
     Math.max(0, Number(monthlyIncomeGoal || 0)) +
@@ -42,83 +48,99 @@ export default function Home() {
     setBufferPercent(20);
   };
 
+  // =========================
+  // UI
+  // =========================
+
   return (
-    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-lg p-8 rounded-2xl shadow-lg space-y-4">
-        <h1 className="text-3xl font-bold text-center mb-2">
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
+
+        <h1 className="text-2xl font-bold text-center">
           Calculate What You Should Charge as a Freelancer
         </h1>
-        <p className="text-sm text-gray-500 text-center mb-6">
+
+        <p className="text-sm text-gray-600 text-center">
           Stop underpricing your work. Know your real hourly and project rate.
         </p>
 
+        {/* INPUTS */}
+        <div className="space-y-4">
 
-        <InputField
-          value={monthlyIncomeGoal}
-          onChange={setMonthlyIncomeGoal}
-          placeholder="Monthly Income Goal (₹)"
-        />
-
-        <InputField
-          value={monthlyExpenses}
-          onChange={setMonthlyExpenses}
-          placeholder="Monthly Expenses (₹)"
-        />
-
-        <InputField
-          value={workingDays}
-          onChange={setWorkingDays}
-          placeholder="Working Days per Month"
-        />
-
-        <InputField
-          value={billableHours}
-          onChange={setBillableHours}
-          placeholder="Billable Hours per Day"
-        />
-
-        <div>
-          <label className="text-sm font-medium">
-            Safety Buffer: {bufferPercent}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="50"
-            value={bufferPercent}
-            onChange={(e) =>
-              setBufferPercent(Number(e.target.value))
-            }
-            className="w-full mt-2"
+          <InputField
+            label="Monthly Income Goal (₹)"
+            value={monthlyIncomeGoal}
+            onChange={setMonthlyIncomeGoal}
           />
+
+          <InputField
+            label="Monthly Expenses (₹)"
+            value={monthlyExpenses}
+            onChange={setMonthlyExpenses}
+          />
+
+          <InputField
+            label="Working Days per Month"
+            value={workingDays}
+            onChange={setWorkingDays}
+          />
+
+          <InputField
+            label="Billable Hours per Day"
+            value={billableHours}
+            onChange={setBillableHours}
+          />
+
+          {/* BUFFER SLIDER */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Safety Buffer: {bufferPercent}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={bufferPercent}
+              onChange={(e) =>
+                setBufferPercent(Number(e.target.value))
+              }
+              className="w-full"
+            />
+          </div>
+
+          <InputField
+            label="Project Estimated Hours"
+            value={projectHours}
+            onChange={setProjectHours}
+          />
+
         </div>
 
-        <InputField
-          value={projectHours}
-          onChange={setProjectHours}
-          placeholder="Project Estimated Hours"
-        />
-
+        {/* RESULTS */}
         <ResultsCard
           totalRequired={totalRequired}
-          recommendedHourlyRate={recommendedHourlyRate}
+          hourlyRate={recommendedHourlyRate}
           projectPrice={projectPrice}
         />
 
+        {/* RESET BUTTON */}
         <button
           onClick={handleReset}
-          className="mt-4 w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+          className="w-full bg-gray-200 hover:bg-gray-300 py-2 rounded-lg"
         >
-          Reset Calculator
+          Reset
         </button>
 
-        <EmailCapture />
-
-        <footer className="mt-10 text-center text-sm text-gray-400">
-          Built by Kishore • Made for beginner freelancers in India
-        </footer>
-
       </div>
+
+      {/* ========================= */}
+      {/* NEWSLETTER SECTION */}
+      {/* ========================= */}
+
+      <div className="max-w-xl mx-auto mt-12">
+        <SubscribeForm />
+      </div>
+
     </main>
   );
 }
