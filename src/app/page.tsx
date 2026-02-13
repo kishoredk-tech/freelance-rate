@@ -89,7 +89,7 @@ export default function Home() {
 
           {/* BUFFER SLIDER */}
           <div>
-            <label className="block mb-2 font-semibold teset-gray-800">
+            <label className="block mb-2 font-semibold text-gray-800">
               Safety Buffer: {bufferPercent}%
             </label>
             <input
