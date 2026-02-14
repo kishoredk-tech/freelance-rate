@@ -51,7 +51,7 @@ export default function SubscribeForm() {
 
       {/* SOCIAL PROOF */}
       <p className="text-xs text-gray-700 mt-3 text-center">
-        Join 17+ freelancers improving their pricing strategy.
+        Used by early freelancers across India
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-4">
