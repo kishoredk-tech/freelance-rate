@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import InputField from "@/components/InputField";
 import ResultsCard from "@/components/ResultsCard";
-import SubscribeForm from "@/components/SubscribeForm";
+import { jsPDF } from "jspdf";
 
 export default function Home() {
+
   const [currency, setCurrency] = useState("INR");
   const [desiredIncome, setDesiredIncome] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
   const [workingDays, setWorkingDays] = useState("");
   const [billableHours, setBillableHours] = useState("");
-  const [bufferPercent, setBufferPercent] = useState(20);
   const [projectHours, setProjectHours] = useState("");
   const [currentRate, setCurrentRate] = useState("");
+  const [email, setEmail] = useState("");
 
   const currencySymbols: Record<string, string> = {
     INR: "₹",
@@ -24,164 +25,206 @@ export default function Home() {
 
   const symbol = currencySymbols[currency];
 
-  const calculations = useMemo(() => {
-    const income = Number(desiredIncome) || 0;
-    const expenses = Number(monthlyExpenses) || 0;
-    const days = Number(workingDays) || 0;
-    const hours = Number(billableHours) || 0;
-    const projectHrs = Number(projectHours) || 0;
-    const current = Number(currentRate) || 0;
+  // =============================
+  // BUSINESS LOGIC
+  // =============================
 
-    const totalRequired = income + expenses;
-    const totalBillableHours = days * hours;
+  const totalRequired =
+    Number(desiredIncome || 0) + Number(monthlyExpenses || 0);
 
-    const baseRate =
-      totalBillableHours > 0
-        ? totalRequired / totalBillableHours
-        : 0;
+  const totalBillableHours =
+    Number(workingDays || 0) * Number(billableHours || 0);
 
-    const recommended =
-      baseRate > 0
-        ? Math.round(baseRate * (1 + bufferPercent / 100))
-        : 0;
+  const recommendedHourlyRate =
+    totalBillableHours > 0
+      ? Math.round(totalRequired / totalBillableHours)
+      : 0;
 
-    const projectPrice =
-      recommended > 0
-        ? Math.round(recommended * projectHrs)
-        : 0;
+  const projectPrice =
+    Math.round(recommendedHourlyRate * Number(projectHours || 0));
 
-    const rateGap =
-      current > 0 ? recommended - current : 0;
+  const rateGap =
+    recommendedHourlyRate - Number(currentRate || 0);
 
-    const monthlyLoss =
-      rateGap > 0 ? Math.round(rateGap * totalBillableHours) : 0;
+  const monthlyLoss =
+    rateGap > 0 ? Math.round(rateGap * totalBillableHours) : 0;
 
-    const yearlyLoss =
-      monthlyLoss > 0 ? monthlyLoss * 12 : 0;
+  const yearlyLoss = monthlyLoss * 12;
 
-    const isUnderpricing =
-      current > 0 && current < recommended;
+  // =============================
+  // PREMIUM PDF GENERATOR (v2 EXECUTIVE STYLE)
+  // =============================
 
-    return {
-      totalRequired,
-      recommended,
-      projectPrice,
-      monthlyLoss,
-      yearlyLoss,
-      isUnderpricing,
-    };
-  }, [
-    desiredIncome,
-    monthlyExpenses,
-    workingDays,
-    billableHours,
-    projectHours,
-    currentRate,
-    bufferPercent,
-  ]);
+  const generatePremiumPDF = () => {
+
+    const doc = new jsPDF();
+
+    const today = new Date().toLocaleDateString();
+
+    // ---------- PAGE 1 (COVER) ----------
+
+    doc.setFillColor(30, 41, 59);
+    doc.rect(0, 0, 210, 297, "F");
+
+    doc.setTextColor(255, 255, 255);
+
+    doc.setFontSize(26);
+    doc.text("Freelance Rate Intelligence", 105, 80, { align: "center" });
+
+    doc.setFontSize(16);
+    doc.text("Pricing Intelligence Report", 105, 95, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${today}`, 105, 110, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.text("Prepared for:", 105, 130, { align: "center" });
+    doc.text(email, 105, 140, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.text("By Kishore Devanga Kothavaru", 105, 260, { align: "center" });
+
+
+    // ---------- PAGE 2 (REPORT) ----------
+
+    doc.addPage();
+    doc.setTextColor(0, 0, 0);
+
+    doc.setFontSize(20);
+    doc.text("Financial Overview", 20, 25);
+
+    doc.setDrawColor(100);
+    doc.line(20, 30, 190, 30);
+
+    doc.setFontSize(13);
+    doc.text(`Required Monthly Income: ${symbol} ${totalRequired}`, 20, 45);
+    doc.text(`Recommended Hourly Rate: ${symbol} ${recommendedHourlyRate}`, 20, 60);
+    doc.text(`Suggested Project Price: ${symbol} ${projectPrice}`, 20, 75);
+
+    doc.setFontSize(18);
+    doc.text("Pricing Diagnosis", 20, 105);
+    doc.line(20, 110, 190, 110);
+
+    doc.setFontSize(12);
+
+    if (rateGap > 0) {
+      doc.text(
+        `You are undercharging by ${symbol} ${rateGap} per hour.`,
+        20,
+        125
+      );
+
+      doc.text(
+        `Estimated Monthly Revenue Loss: ${symbol} ${monthlyLoss}`,
+        20,
+        140
+      );
+
+      doc.text(
+        `Estimated Yearly Revenue Loss: ${symbol} ${yearlyLoss}`,
+        20,
+        155
+      );
+    } else {
+      doc.text(
+        "Your pricing structure appears aligned.",
+        20,
+        125
+      );
+    }
+
+    doc.setFontSize(10);
+    doc.text(
+      "Pricing is structural. Not emotional.",
+      20,
+      270
+    );
+
+    doc.save("Freelance-Rate-Intelligence-Report.pdf");
+  };
+
+  const handleUnlock = () => {
+    if (!email) return;
+    generatePremiumPDF();
+  };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 py-16 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-14 px-6">
+      <div className="max-w-3xl mx-auto bg-white shadow-2xl rounded-3xl p-12 space-y-10">
 
-      <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl p-10 space-y-8 border border-gray-200">
-
-        {/* HEADER */}
         <div className="text-center space-y-3">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-4xl font-bold text-gray-900">
             Freelance Rate Intelligence
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600">
             Structural pricing calculator for serious freelancers.
           </p>
         </div>
 
-        {/* CURRENCY */}
-        <div>
-          <label className="block mb-3 font-semibold text-gray-800">
-            Currency
-          </label>
-          <select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="w-full p-4 border border-gray-300 rounded-2xl bg-white text-gray-900 font-medium shadow-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none"
-          >
-            <option value="INR">INR (₹)</option>
-            <option value="USD">USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-          </select>
-        </div>
-
-        {/* INPUTS */}
         <div className="space-y-6">
 
-          <InputField
-            label={`Desired Monthly Income (${symbol})`}
-            value={desiredIncome}
-            onChange={setDesiredIncome}
-          />
-
-          <InputField
-            label={`Monthly Expenses (${symbol})`}
-            value={monthlyExpenses}
-            onChange={setMonthlyExpenses}
-          />
-
-          <InputField
-            label="Working Days per Month"
-            value={workingDays}
-            onChange={setWorkingDays}
-          />
-
-          <InputField
-            label="Billable Hours per Day"
-            value={billableHours}
-            onChange={setBillableHours}
-          />
-
-          <InputField
-            label={`Your Current Hourly Rate (${symbol})`}
-            value={currentRate}
-            onChange={setCurrentRate}
-          />
-
-          {/* BUFFER */}
           <div>
-            <label className="block mb-3 font-semibold text-gray-800">
-              Safety Buffer: {bufferPercent}%
+            <label className="block mb-2 font-semibold text-gray-700">
+              Currency
             </label>
-            <input
-              type="range"
-              min="0"
-              max="50"
-              value={bufferPercent}
-              onChange={(e) =>
-                setBufferPercent(Number(e.target.value))
-              }
-              className="w-full accent-indigo-600"
-            />
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full p-3 rounded-xl border border-gray-300 bg-white text-gray-900 font-medium shadow-sm focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="INR">INR (₹)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
           </div>
 
-          <InputField
-            label="Project Estimated Hours"
-            value={projectHours}
-            onChange={setProjectHours}
-          />
+          <InputField label={`Desired Monthly Income (${symbol})`} value={desiredIncome} onChange={setDesiredIncome} />
+          <InputField label={`Monthly Expenses (${symbol})`} value={monthlyExpenses} onChange={setMonthlyExpenses} />
+          <InputField label="Working Days per Month" value={workingDays} onChange={setWorkingDays} />
+          <InputField label="Billable Hours per Day" value={billableHours} onChange={setBillableHours} />
+          <InputField label={`Your Current Hourly Rate (${symbol})`} value={currentRate} onChange={setCurrentRate} />
+          <InputField label="Project Estimated Hours" value={projectHours} onChange={setProjectHours} />
 
         </div>
 
-        {/* RESULTS */}
         <ResultsCard
           currencySymbol={symbol}
-          totalRequired={calculations.totalRequired}
-          recommendedHourlyRate={calculations.recommended}
-          projectPrice={calculations.projectPrice}
-          monthlyLoss={calculations.monthlyLoss}
-          yearlyLoss={calculations.yearlyLoss}
-          isUnderpricing={calculations.isUnderpricing}
+          totalRequired={totalRequired}
+          recommendedHourlyRate={recommendedHourlyRate}
+          projectPrice={projectPrice}
         />
 
-        <SubscribeForm />
+        {rateGap > 0 && (
+          <div className="p-6 bg-red-50 border border-red-200 rounded-xl">
+            <p className="font-semibold text-red-700">You are undercharging.</p>
+            <p className="mt-2 text-red-600">Monthly Loss: {symbol} {monthlyLoss}</p>
+            <p className="text-red-600">Yearly Loss: {symbol} {yearlyLoss}</p>
+          </div>
+        )}
+
+        <div className="mt-12 p-10 rounded-3xl bg-gradient-to-r from-indigo-900 to-slate-900 text-white space-y-6 shadow-xl">
+
+          <h2 className="text-2xl font-semibold text-center">
+            Unlock Premium Pricing Intelligence Report
+          </h2>
+
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-4 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+
+          <button
+            onClick={handleUnlock}
+            className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition"
+          >
+            Download Premium Report (PDF)
+          </button>
+
+        </div>
 
       </div>
     </main>

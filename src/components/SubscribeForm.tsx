@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 
-export default function SubscribeForm({ onSubscribed }: any) {
+type Props = {
+  onSuccess: () => void;
+};
+
+export default function SubscribeForm({ onSuccess }: Props) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -19,47 +23,95 @@ export default function SubscribeForm({ onSubscribed }: any) {
     });
 
     if (res.ok) {
-      setMessage("Unlocked. You can now download the report.");
-      onSubscribed();
+      setMessage("Unlocked. You can now download your premium report.");
+      onSuccess();
     } else {
-      setMessage("Subscription failed.");
+      setMessage("Something went wrong.");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="bg-zinc-800 p-6 rounded-xl border border-zinc-700 mt-6">
+    <div className="
+      p-10
+      rounded-3xl
+      bg-gradient-to-r
+      from-slate-900
+      to-indigo-950
+      shadow-2xl
+      space-y-6
+    ">
 
-      <h3 className="text-lg font-semibold text-white text-center">
-        Unlock Premium Pricing Report
+      {/* Title */}
+      <h3 className="text-2xl font-semibold text-white text-center">
+        Unlock Premium Pricing Intelligence Report
       </h3>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-4">
+      {/* Subtitle */}
+      <p className="text-sm text-indigo-200 text-center">
+        Enter your email to download your detailed pricing intelligence report.
+      </p>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-6">
 
         <input
           type="email"
-          placeholder="Enter your email"
           required
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="p-3 rounded-lg bg-black border border-gray-600 text-white"
+          className="
+            w-full
+            px-5
+            py-4
+            rounded-2xl
+            bg-slate-800
+            text-white
+            placeholder-slate-400
+            border border-slate-700
+            focus:outline-none
+            focus:ring-2
+            focus:ring-indigo-500
+            focus:border-indigo-500
+            transition
+            text-lg
+          "
         />
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-white text-black py-3 rounded-lg font-semibold"
+          className="
+            w-full
+            py-4
+            rounded-2xl
+            font-semibold
+            text-white
+            bg-gradient-to-r
+            from-indigo-600
+            to-purple-600
+            hover:from-indigo-700
+            hover:to-purple-700
+            transition
+            shadow-lg
+            text-lg
+            disabled:opacity-60
+          "
         >
-          {loading ? "Unlocking..." : "Unlock Report"}
+          {loading ? "Unlocking..." : "Download Premium Report (PDF)"}
         </button>
+
       </form>
 
+      {/* Message */}
       {message && (
-        <p className="text-sm text-green-400 mt-3 text-center">
+        <p className="text-center text-sm font-medium text-green-400">
           {message}
         </p>
       )}
+
     </div>
   );
 }

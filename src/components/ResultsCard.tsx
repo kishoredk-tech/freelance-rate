@@ -3,9 +3,6 @@ type ResultsCardProps = {
   totalRequired: number;
   recommendedHourlyRate: number;
   projectPrice: number;
-  monthlyLoss: number;
-  yearlyLoss: number;
-  isUnderpricing: boolean;
 };
 
 export default function ResultsCard({
@@ -13,53 +10,37 @@ export default function ResultsCard({
   totalRequired,
   recommendedHourlyRate,
   projectPrice,
-  monthlyLoss,
-  yearlyLoss,
-  isUnderpricing,
 }: ResultsCardProps) {
   return (
-    <div className="mt-8 p-8 bg-white rounded-3xl border border-gray-200 shadow-lg space-y-6">
+    <div className="mt-8 p-8 bg-gray-50 rounded-2xl shadow-inner space-y-6">
 
       <div>
-        <p className="text-gray-500 text-sm uppercase tracking-wide">
+        <p className="text-sm text-gray-500 uppercase">
           Required Monthly Income
         </p>
-        <p className="text-3xl font-bold text-gray-900">
-          {currencySymbol} {totalRequired.toLocaleString()}
+        <p className="text-2xl font-bold text-gray-800">
+          {currencySymbol} {totalRequired}
         </p>
       </div>
 
       <div>
-        <p className="text-gray-500 text-sm uppercase tracking-wide">
+        <p className="text-sm text-gray-500 uppercase">
           Recommended Hourly Rate
         </p>
-        <p className="text-3xl font-bold text-indigo-600">
-          {currencySymbol} {recommendedHourlyRate.toLocaleString()} / hour
+        <p className="text-2xl font-bold text-indigo-600">
+          {currencySymbol} {recommendedHourlyRate} / hour
         </p>
       </div>
 
       <div>
-        <p className="text-gray-500 text-sm uppercase tracking-wide">
+        <p className="text-sm text-gray-500 uppercase">
           Suggested Project Price
         </p>
-        <p className="text-3xl font-bold text-gray-900">
-          {currencySymbol} {projectPrice.toLocaleString()}
+        <p className="text-2xl font-bold text-gray-800">
+          {currencySymbol} {projectPrice}
         </p>
       </div>
 
-      {isUnderpricing && (
-        <div className="p-5 bg-red-50 border border-red-200 rounded-2xl">
-          <p className="font-semibold text-red-600 text-lg">
-            You are undercharging.
-          </p>
-          <p className="mt-2 text-gray-700">
-            Monthly loss: {currencySymbol} {monthlyLoss.toLocaleString()}
-          </p>
-          <p className="text-gray-700">
-            Yearly loss: {currencySymbol} {yearlyLoss.toLocaleString()}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
