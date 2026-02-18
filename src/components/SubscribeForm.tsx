@@ -38,24 +38,21 @@ export default function SubscribeForm() {
 
   return (
     <div className="mt-6 p-6 bg-gray-200 rounded-xl max-w-md mx-auto">
-      
-      {/* HEADING */}
+
       <h3 className="text-lg font-semibold text-black text-center">
-        Get My Freelance Pricing Framework (Free PDF)
+        Get The Freelance Pricing Framework (Free PDF)
       </h3>
 
-      {/* DESCRIPTION */}
       <p className="text-sm text-gray-800 mt-2 text-center">
-        A simple step-by-step system to confidently calculate and charge your ideal freelance rate.
+        A practical system to calculate your rate structurally — not emotionally.
       </p>
 
-      {/* SOCIAL PROOF */}
       <p className="text-xs text-gray-700 mt-3 text-center">
-        Used by early freelancers across India
+        Join 100+ freelancers learning to price properly.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-4">
-        
+
         <input
           type="email"
           placeholder="Enter your best email"
@@ -74,7 +71,6 @@ export default function SubscribeForm() {
         </button>
       </form>
 
-      {/* MESSAGE */}
       {message && (
         <p
           className={`text-sm mt-3 text-center font-medium ${

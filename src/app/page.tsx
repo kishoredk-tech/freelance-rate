@@ -9,19 +9,15 @@ export default function Home() {
   // =========================
   // STATE
   // =========================
-  const [monthlyIncomeGoal, setMonthlyIncomeGoal] = useState("");
+  const [currency, setCurrency] = useState("INR");
+  const [desiredIncome, setDesiredIncome] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
   const [workingDays, setWorkingDays] = useState("");
   const [billableHours, setBillableHours] = useState("");
   const [bufferPercent, setBufferPercent] = useState(20);
   const [projectHours, setProjectHours] = useState("");
   const [shareMessage, setShareMessage] = useState("");
-  const [nonBillablePercent, setNonBillablePercent] = useState(30);
-  const [currency, setCurrency] = useState("INR");
 
-  // =========================
-  // CURRENCY SYMBOLS
-  // =========================
   const currencySymbols: Record<string, string> = {
     INR: "₹",
     USD: "$",
@@ -29,27 +25,21 @@ export default function Home() {
     GBP: "£",
   };
 
-  const symbol = currencySymbols[currency];
-
   // =========================
   // BUSINESS LOGIC
   // =========================
 
   const totalRequired =
-    Math.max(0, Number(monthlyIncomeGoal || 0)) +
+    Math.max(0, Number(desiredIncome || 0)) +
     Math.max(0, Number(monthlyExpenses || 0));
 
-  const totalWorkingHours =
+  const totalBillableHours =
     Math.max(0, Number(workingDays || 0)) *
     Math.max(0, Number(billableHours || 0));
 
-  // Adjust for non-billable time
-  const effectiveBillableHours =
-    totalWorkingHours * (1 - nonBillablePercent / 100);
-
   const baseHourlyRate =
-    effectiveBillableHours > 0
-      ? totalRequired / effectiveBillableHours
+    totalBillableHours > 0
+      ? totalRequired / totalBillableHours
       : 0;
 
   const recommendedHourlyRate =
@@ -59,13 +49,12 @@ export default function Home() {
     Math.round(recommendedHourlyRate * Number(projectHours || 0));
 
   const handleReset = () => {
-    setMonthlyIncomeGoal("");
+    setDesiredIncome("");
     setMonthlyExpenses("");
     setWorkingDays("");
     setBillableHours("");
     setProjectHours("");
     setBufferPercent(20);
-    setNonBillablePercent(30);
     setCurrency("INR");
   };
 
@@ -106,34 +95,34 @@ export default function Home() {
           Free calculator to find your ideal freelance hourly rate.
         </p>
 
-        {/* CURRENCY SELECTOR */}
-        <div>
-          <label className="block mb-2 font-semibold text-gray-800">
-            Currency
-          </label>
-          <select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="w-full p-2 border rounded-lg"
-          >
-            <option value="INR">INR (₹)</option>
-            <option value="USD">USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-          </select>
-        </div>
-
         {/* INPUTS */}
         <div className="space-y-4">
 
+          {/* Currency */}
+          <div>
+            <label className="block mb-2 font-semibold text-gray-800">
+              Currency
+            </label>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full p-3 border border-gray-400 rounded-lg bg-white"
+            >
+              <option value="INR">INR (₹)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+
           <InputField
-            label={`Monthly Income Goal (${symbol})`}
-            value={monthlyIncomeGoal}
-            onChange={setMonthlyIncomeGoal}
+            label={`Desired Take-Home Income (${currencySymbols[currency]})`}
+            value={desiredIncome}
+            onChange={setDesiredIncome}
           />
 
           <InputField
-            label={`Monthly Expenses (${symbol})`}
+            label={`Monthly Expenses (${currencySymbols[currency]})`}
             value={monthlyExpenses}
             onChange={setMonthlyExpenses}
           />
@@ -149,23 +138,6 @@ export default function Home() {
             value={billableHours}
             onChange={setBillableHours}
           />
-
-          {/* NON BILLABLE SLIDER */}
-          <div>
-            <label className="block mb-2 font-semibold text-gray-800">
-              Non-Billable Time: {nonBillablePercent}%
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="80"
-              value={nonBillablePercent}
-              onChange={(e) =>
-                setNonBillablePercent(Number(e.target.value))
-              }
-              className="w-full"
-            />
-          </div>
 
           {/* BUFFER SLIDER */}
           <div>
@@ -194,14 +166,30 @@ export default function Home() {
 
         {/* RESULTS */}
         <ResultsCard
+          currencySymbol={currencySymbols[currency]}
           totalRequired={totalRequired}
           recommendedHourlyRate={recommendedHourlyRate}
           projectPrice={projectPrice}
-          symbol={symbol}
         />
 
+        {/* Reality Check */}
+        {recommendedHourlyRate > 0 && (
+          <div className="mt-6 p-4 bg-yellow-100 rounded-lg text-sm text-gray-800">
+            <p className="font-semibold">Reality Check:</p>
+            <p className="mt-2">
+              If you charge less than {currencySymbols[currency]} {recommendedHourlyRate},
+              you're likely:
+            </p>
+            <ul className="list-disc ml-5 mt-2">
+              <li>Working more hours than planned</li>
+              <li>Underestimating your expenses</li>
+              <li>Skipping your safety buffer</li>
+            </ul>
+          </div>
+        )}
+
         {/* MICRO TRIGGER */}
-        <p className="text-sm text-center text-gray-600 mt-2">
+        <p className="text-sm text-center text-gray-600 mt-4">
           Want help reaching this rate consistently? Get my pricing framework below 👇
         </p>
 
@@ -238,7 +226,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <p className="text-center text-sm text-gray-600 mt-6">
-          Built by Kishore • Practical tools for freelancers
+          Built by Kishore • Micro tools for freelancers
         </p>
 
       </div>

@@ -1,15 +1,15 @@
 type ResultsCardProps = {
+  currencySymbol: string;
   totalRequired: number;
   recommendedHourlyRate: number;
   projectPrice: number;
-  symbol: string;
 };
 
 export default function ResultsCard({
+  currencySymbol,
   totalRequired,
   recommendedHourlyRate,
   projectPrice,
-  symbol,
 }: ResultsCardProps) {
   return (
     <div className="mt-8 p-6 bg-gray-100 rounded-xl space-y-4">
@@ -18,7 +18,7 @@ export default function ResultsCard({
           Total Required Income
         </p>
         <p className="text-xl font-bold text-green-600">
-          {symbol} {totalRequired}
+          {currencySymbol} {totalRequired}
         </p>
       </div>
 
@@ -27,7 +27,7 @@ export default function ResultsCard({
           Recommended Hourly Rate
         </p>
         <p className="text-xl font-bold text-blue-600">
-          {symbol} {recommendedHourlyRate} / hour
+          {currencySymbol} {recommendedHourlyRate} / hour
         </p>
       </div>
 
@@ -36,7 +36,7 @@ export default function ResultsCard({
           Suggested Project Price
         </p>
         <p className="text-xl font-bold text-gray-900">
-          {symbol} {projectPrice}
+          {currencySymbol} {projectPrice}
         </p>
       </div>
     </div>
