@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import InputField from "@/components/InputField";
 import ResultsCard from "@/components/ResultsCard";
 import SubscribeForm from "@/components/SubscribeForm";
 
 export default function Home() {
-  // =========================
-  // STATE
-  // =========================
   const [currency, setCurrency] = useState("INR");
   const [desiredIncome, setDesiredIncome] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
@@ -16,7 +13,7 @@ export default function Home() {
   const [billableHours, setBillableHours] = useState("");
   const [bufferPercent, setBufferPercent] = useState(20);
   const [projectHours, setProjectHours] = useState("");
-  const [shareMessage, setShareMessage] = useState("");
+  const [currentRate, setCurrentRate] = useState("");
 
   const currencySymbols: Record<string, string> = {
     INR: "₹",
@@ -25,104 +22,107 @@ export default function Home() {
     GBP: "£",
   };
 
-  // =========================
-  // BUSINESS LOGIC
-  // =========================
+  const symbol = currencySymbols[currency];
 
-  const totalRequired =
-    Math.max(0, Number(desiredIncome || 0)) +
-    Math.max(0, Number(monthlyExpenses || 0));
+  const calculations = useMemo(() => {
+    const income = Number(desiredIncome) || 0;
+    const expenses = Number(monthlyExpenses) || 0;
+    const days = Number(workingDays) || 0;
+    const hours = Number(billableHours) || 0;
+    const projectHrs = Number(projectHours) || 0;
+    const current = Number(currentRate) || 0;
 
-  const totalBillableHours =
-    Math.max(0, Number(workingDays || 0)) *
-    Math.max(0, Number(billableHours || 0));
+    const totalRequired = income + expenses;
+    const totalBillableHours = days * hours;
 
-  const baseHourlyRate =
-    totalBillableHours > 0
-      ? totalRequired / totalBillableHours
-      : 0;
+    const baseRate =
+      totalBillableHours > 0
+        ? totalRequired / totalBillableHours
+        : 0;
 
-  const recommendedHourlyRate =
-    Math.round(baseHourlyRate * (1 + bufferPercent / 100));
+    const recommended =
+      baseRate > 0
+        ? Math.round(baseRate * (1 + bufferPercent / 100))
+        : 0;
 
-  const projectPrice =
-    Math.round(recommendedHourlyRate * Number(projectHours || 0));
+    const projectPrice =
+      recommended > 0
+        ? Math.round(recommended * projectHrs)
+        : 0;
 
-  const handleReset = () => {
-    setDesiredIncome("");
-    setMonthlyExpenses("");
-    setWorkingDays("");
-    setBillableHours("");
-    setProjectHours("");
-    setBufferPercent(20);
-    setCurrency("INR");
-  };
+    const rateGap =
+      current > 0 ? recommended - current : 0;
 
-  // =========================
-  // SHARE FUNCTION
-  // =========================
+    const monthlyLoss =
+      rateGap > 0 ? Math.round(rateGap * totalBillableHours) : 0;
 
-  const handleShare = async () => {
-    const shareData = {
-      title: "Freelance Rate Calculator",
-      text: "Stop underpricing your freelance work. Calculate your ideal hourly rate instantly.",
-      url: window.location.href,
+    const yearlyLoss =
+      monthlyLoss > 0 ? monthlyLoss * 12 : 0;
+
+    const isUnderpricing =
+      current > 0 && current < recommended;
+
+    return {
+      totalRequired,
+      recommended,
+      projectPrice,
+      monthlyLoss,
+      yearlyLoss,
+      isUnderpricing,
     };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        setShareMessage("Link copied to clipboard!");
-        setTimeout(() => setShareMessage(""), 2000);
-      }
-    } catch (error) {
-      console.error("Sharing failed:", error);
-    }
-  };
+  }, [
+    desiredIncome,
+    monthlyExpenses,
+    workingDays,
+    billableHours,
+    projectHours,
+    currentRate,
+    bufferPercent,
+  ]);
 
   return (
-    <main className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="max-w-xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 py-16 px-4">
+
+      <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl p-10 space-y-8 border border-gray-200">
 
         {/* HEADER */}
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
-          Stop Underpricing Your Freelance Work
-        </h1>
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+            Freelance Rate Intelligence
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Structural pricing calculator for serious freelancers.
+          </p>
+        </div>
 
-        <p className="text-sm text-gray-600 text-center">
-          Free calculator to find your ideal freelance hourly rate.
-        </p>
+        {/* CURRENCY */}
+        <div>
+          <label className="block mb-3 font-semibold text-gray-800">
+            Currency
+          </label>
+          <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="w-full p-4 border border-gray-300 rounded-2xl bg-white text-gray-900 font-medium shadow-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none"
+          >
+            <option value="INR">INR (₹)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </div>
 
         {/* INPUTS */}
-        <div className="space-y-4">
-
-          {/* Currency */}
-          <div>
-            <label className="block mb-2 font-semibold text-gray-800">
-              Currency
-            </label>
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="w-full p-3 border border-gray-400 rounded-lg bg-white"
-            >
-              <option value="INR">INR (₹)</option>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-            </select>
-          </div>
+        <div className="space-y-6">
 
           <InputField
-            label={`Desired Take-Home Income (${currencySymbols[currency]})`}
+            label={`Desired Monthly Income (${symbol})`}
             value={desiredIncome}
             onChange={setDesiredIncome}
           />
 
           <InputField
-            label={`Monthly Expenses (${currencySymbols[currency]})`}
+            label={`Monthly Expenses (${symbol})`}
             value={monthlyExpenses}
             onChange={setMonthlyExpenses}
           />
@@ -139,20 +139,26 @@ export default function Home() {
             onChange={setBillableHours}
           />
 
-          {/* BUFFER SLIDER */}
+          <InputField
+            label={`Your Current Hourly Rate (${symbol})`}
+            value={currentRate}
+            onChange={setCurrentRate}
+          />
+
+          {/* BUFFER */}
           <div>
-            <label className="block mb-2 font-semibold text-gray-800">
+            <label className="block mb-3 font-semibold text-gray-800">
               Safety Buffer: {bufferPercent}%
             </label>
             <input
               type="range"
               min="0"
-              max="100"
+              max="50"
               value={bufferPercent}
               onChange={(e) =>
                 setBufferPercent(Number(e.target.value))
               }
-              className="w-full"
+              className="w-full accent-indigo-600"
             />
           </div>
 
@@ -166,68 +172,16 @@ export default function Home() {
 
         {/* RESULTS */}
         <ResultsCard
-          currencySymbol={currencySymbols[currency]}
-          totalRequired={totalRequired}
-          recommendedHourlyRate={recommendedHourlyRate}
-          projectPrice={projectPrice}
+          currencySymbol={symbol}
+          totalRequired={calculations.totalRequired}
+          recommendedHourlyRate={calculations.recommended}
+          projectPrice={calculations.projectPrice}
+          monthlyLoss={calculations.monthlyLoss}
+          yearlyLoss={calculations.yearlyLoss}
+          isUnderpricing={calculations.isUnderpricing}
         />
 
-        {/* Reality Check */}
-        {recommendedHourlyRate > 0 && (
-          <div className="mt-6 p-4 bg-yellow-100 rounded-lg text-sm text-gray-800">
-            <p className="font-semibold">Reality Check:</p>
-            <p className="mt-2">
-              If you charge less than {currencySymbols[currency]} {recommendedHourlyRate},
-              you're likely:
-            </p>
-            <ul className="list-disc ml-5 mt-2">
-              <li>Working more hours than planned</li>
-              <li>Underestimating your expenses</li>
-              <li>Skipping your safety buffer</li>
-            </ul>
-          </div>
-        )}
-
-        {/* MICRO TRIGGER */}
-        <p className="text-sm text-center text-gray-600 mt-4">
-          Want help reaching this rate consistently? Get my pricing framework below 👇
-        </p>
-
-        {/* NEWSLETTER */}
-        <div className="mt-6">
-          <SubscribeForm />
-        </div>
-
-        {/* SHARE SECTION */}
-        <p className="text-xs text-gray-600 text-center mt-4">
-          Know a freelancer who undercharges? Share this tool with them.
-        </p>
-
-        <button
-          onClick={handleShare}
-          className="w-full bg-black text-white py-3 rounded-lg mt-3 hover:bg-gray-800 transition font-medium"
-        >
-          Share This Tool
-        </button>
-
-        {shareMessage && (
-          <p className="text-center text-sm text-green-600 mt-2">
-            {shareMessage}
-          </p>
-        )}
-
-        {/* RESET BUTTON */}
-        <button
-          onClick={handleReset}
-          className="w-full bg-gray-200 hover:bg-gray-300 text-black font-medium py-2 rounded-lg mt-3"
-        >
-          Reset
-        </button>
-
-        {/* FOOTER */}
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Built by Kishore • Micro tools for freelancers
-        </p>
+        <SubscribeForm />
 
       </div>
     </main>

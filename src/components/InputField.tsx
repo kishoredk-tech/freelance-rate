@@ -10,8 +10,8 @@ export default function InputField({
   onChange,
 }: InputFieldProps) {
   return (
-    <div className="space-y-1">
-      <label className="block text-sm font-medium text-gray-800">
+    <div>
+      <label className="block mb-3 font-semibold text-gray-800">
         {label}
       </label>
 
@@ -19,7 +19,7 @@ export default function InputField({
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-3 border border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        className="w-full p-4 border border-gray-300 rounded-2xl bg-white text-gray-900 text-lg font-medium shadow-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none"
       />
     </div>
   );
