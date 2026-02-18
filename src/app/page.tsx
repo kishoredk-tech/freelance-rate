@@ -16,6 +16,20 @@ export default function Home() {
   const [bufferPercent, setBufferPercent] = useState(20);
   const [projectHours, setProjectHours] = useState("");
   const [shareMessage, setShareMessage] = useState("");
+  const [nonBillablePercent, setNonBillablePercent] = useState(30);
+  const [currency, setCurrency] = useState("INR");
+
+  // =========================
+  // CURRENCY SYMBOLS
+  // =========================
+  const currencySymbols: Record<string, string> = {
+    INR: "₹",
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+  };
+
+  const symbol = currencySymbols[currency];
 
   // =========================
   // BUSINESS LOGIC
@@ -25,13 +39,17 @@ export default function Home() {
     Math.max(0, Number(monthlyIncomeGoal || 0)) +
     Math.max(0, Number(monthlyExpenses || 0));
 
-  const totalBillableHours =
+  const totalWorkingHours =
     Math.max(0, Number(workingDays || 0)) *
     Math.max(0, Number(billableHours || 0));
 
+  // Adjust for non-billable time
+  const effectiveBillableHours =
+    totalWorkingHours * (1 - nonBillablePercent / 100);
+
   const baseHourlyRate =
-    totalBillableHours > 0
-      ? totalRequired / totalBillableHours
+    effectiveBillableHours > 0
+      ? totalRequired / effectiveBillableHours
       : 0;
 
   const recommendedHourlyRate =
@@ -47,6 +65,8 @@ export default function Home() {
     setBillableHours("");
     setProjectHours("");
     setBufferPercent(20);
+    setNonBillablePercent(30);
+    setCurrency("INR");
   };
 
   // =========================
@@ -86,17 +106,34 @@ export default function Home() {
           Free calculator to find your ideal freelance hourly rate.
         </p>
 
+        {/* CURRENCY SELECTOR */}
+        <div>
+          <label className="block mb-2 font-semibold text-gray-800">
+            Currency
+          </label>
+          <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="w-full p-2 border rounded-lg"
+          >
+            <option value="INR">INR (₹)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </div>
+
         {/* INPUTS */}
         <div className="space-y-4">
 
           <InputField
-            label="Monthly Income Goal (₹)"
+            label={`Monthly Income Goal (${symbol})`}
             value={monthlyIncomeGoal}
             onChange={setMonthlyIncomeGoal}
           />
 
           <InputField
-            label="Monthly Expenses (₹)"
+            label={`Monthly Expenses (${symbol})`}
             value={monthlyExpenses}
             onChange={setMonthlyExpenses}
           />
@@ -112,6 +149,23 @@ export default function Home() {
             value={billableHours}
             onChange={setBillableHours}
           />
+
+          {/* NON BILLABLE SLIDER */}
+          <div>
+            <label className="block mb-2 font-semibold text-gray-800">
+              Non-Billable Time: {nonBillablePercent}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="80"
+              value={nonBillablePercent}
+              onChange={(e) =>
+                setNonBillablePercent(Number(e.target.value))
+              }
+              className="w-full"
+            />
+          </div>
 
           {/* BUFFER SLIDER */}
           <div>
@@ -143,6 +197,7 @@ export default function Home() {
           totalRequired={totalRequired}
           recommendedHourlyRate={recommendedHourlyRate}
           projectPrice={projectPrice}
+          symbol={symbol}
         />
 
         {/* MICRO TRIGGER */}
@@ -167,7 +222,6 @@ export default function Home() {
           Share This Tool
         </button>
 
-        {/* Share Success Message */}
         {shareMessage && (
           <p className="text-center text-sm text-green-600 mt-2">
             {shareMessage}
@@ -184,7 +238,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <p className="text-center text-sm text-gray-600 mt-6">
-          Built by Kishore • Made for beginner freelancers
+          Built by Kishore • Practical tools for freelancers
         </p>
 
       </div>
