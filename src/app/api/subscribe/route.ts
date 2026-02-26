@@ -6,7 +6,7 @@ export async function POST(req: Request) {
 
     if (!email) {
       return NextResponse.json(
-        { error: "Email is required" },
+        { error: "Email required" },
         { status: 400 }
       );
     }
@@ -29,12 +29,13 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: "Failed to subscribe" },
+        { error: "Subscription failed" },
         { status: 400 }
       );
     }
 
     return NextResponse.json({ success: true });
+
   } catch (error) {
     return NextResponse.json(
       { error: "Server error" },
