@@ -8,10 +8,17 @@ import { track } from "@vercel/analytics";
 
 export default function Home() {
   const [currency, setCurrency] = useState("INR");
-  const [desiredIncome, setDesiredIncome] = useState("");
+
+  // 🔥 renamed (no logic break)
+  const [desiredProfit, setDesiredProfit] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
+
   const [workingDays, setWorkingDays] = useState("");
   const [billableHours, setBillableHours] = useState("");
+
+  // 🔥 NEW
+  const [nonBillablePercent, setNonBillablePercent] = useState(30);
+
   const [projectHours, setProjectHours] = useState("");
   const [currentRate, setCurrentRate] = useState("");
 
@@ -29,15 +36,22 @@ export default function Home() {
 
   const symbol = currencySymbols[currency];
 
-  const totalRequired =
-    Number(desiredIncome || 0) + Number(monthlyExpenses || 0);
+  // =============================
+  // 🔥 UPDATED LOGIC (ENHANCED)
+  // =============================
 
-  const totalBillableHours =
+  const totalRequired =
+    Number(desiredProfit || 0) + Number(monthlyExpenses || 0);
+
+  const rawHours =
     Number(workingDays || 0) * Number(billableHours || 0);
 
+  const effectiveBillableHours =
+    rawHours * ((100 - nonBillablePercent) / 100);
+
   const recommendedHourlyRate =
-    totalBillableHours > 0
-      ? Math.round(totalRequired / totalBillableHours)
+    effectiveBillableHours > 0
+      ? Math.round(totalRequired / effectiveBillableHours)
       : 0;
 
   const projectPrice =
@@ -47,87 +61,49 @@ export default function Home() {
     recommendedHourlyRate - Number(currentRate || 0);
 
   const monthlyLoss =
-    rateGap > 0 ? Math.round(rateGap * totalBillableHours) : 0;
+    rateGap > 0 ? Math.round(rateGap * effectiveBillableHours) : 0;
 
   const yearlyLoss = monthlyLoss * 12;
 
   // =============================
-  // EXECUTIVE PDF
+  // PDF (ENHANCED)
   // =============================
 
   const generatePremiumPDF = () => {
     const doc = new jsPDF();
-    const today = new Date().toLocaleDateString();
 
-    // COVER
-    doc.setFillColor(49, 46, 129);
-    doc.rect(0, 0, 210, 297, "F");
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(26);
-    doc.text("Freelance Pricing Intelligence", 105, 85, { align: "center" });
-
-    doc.setFontSize(16);
-    doc.text("Executive Strategic Report", 105, 100, { align: "center" });
+    doc.setFontSize(18);
+    doc.text("Freelance Pricing Report", 20, 20);
 
     doc.setFontSize(12);
-    doc.text(`Prepared for: ${email}`, 105, 120, { align: "center" });
-    doc.text(`Generated on: ${today}`, 105, 130, { align: "center" });
 
-    doc.setFontSize(10);
+    doc.text(`Expenses: ${symbol} ${monthlyExpenses}`, 20, 40);
+    doc.text(`Desired Profit: ${symbol} ${desiredProfit}`, 20, 50);
+    doc.text(`Total Target: ${symbol} ${totalRequired}`, 20, 60);
+
     doc.text(
-      "Prepared by Kishore Devanga Kothavaru • Senior Software Engineer",
-      105,
-      270,
-      { align: "center" }
+      `Effective Billable Hours: ${Math.round(effectiveBillableHours)}`,
+      20,
+      80
     );
 
-    // PAGE 2 – FINANCIALS
-    doc.addPage();
-    doc.setTextColor(0, 0, 0);
+    doc.text(
+      `Recommended Rate: ${symbol} ${recommendedHourlyRate}/hr`,
+      20,
+      100
+    );
 
-    doc.setFontSize(20);
-    doc.text("Financial Overview", 20, 30);
-    doc.line(20, 35, 190, 35);
-
-    doc.setFontSize(13);
-    doc.text(`Target Monthly Income: ${symbol} ${totalRequired}`, 20, 55);
-    doc.text(`Recommended Hourly Rate: ${symbol} ${recommendedHourlyRate}`, 20, 70);
-    doc.text(`Estimated Project Price: ${symbol} ${projectPrice}`, 20, 85);
-
-    // PAGE 3 – DIAGNOSIS
-    doc.addPage();
-    doc.setFontSize(20);
-    doc.text("Pricing Diagnosis", 20, 30);
-    doc.line(20, 35, 190, 35);
-
-    doc.setFontSize(13);
+    doc.text(`Project Price: ${symbol} ${projectPrice}`, 20, 115);
 
     if (rateGap > 0) {
-      doc.text(`You are undercharging by ${symbol} ${rateGap}/hour.`, 20, 55);
-      doc.text(`Monthly Revenue Leakage: ${symbol} ${monthlyLoss}`, 20, 70);
-      doc.text(`Yearly Revenue Leakage: ${symbol} ${yearlyLoss}`, 20, 85);
-
-      doc.text("Strategic Recommendations:", 20, 110);
-      doc.text("- Raise pricing gradually in structured increments.", 20, 125);
-      doc.text("- Anchor pricing to value delivered.", 20, 140);
-      doc.text("- Stop competing purely on price.", 20, 155);
-      doc.text("- Position yourself as premium, not affordable.", 20, 170);
-    } else {
-      doc.text("Your pricing appears structurally aligned.", 20, 55);
+      doc.text(`Undercharging: ${symbol} ${rateGap}/hr`, 20, 135);
+      doc.text(`Monthly Loss: ${symbol} ${monthlyLoss}`, 20, 145);
     }
 
-    doc.setFontSize(10);
-    doc.text("Pricing is structural. Not emotional.", 20, 270);
-
-    doc.save("Freelance-Pricing-Executive-Report.pdf");
+    doc.save("pricing-report.pdf");
 
     track("premium_report_downloaded");
   };
-
-  // =============================
-  // EMAIL GATE
-  // =============================
 
   const handleUnlock = async () => {
     if (!email) return;
@@ -144,10 +120,10 @@ export default function Home() {
     if (res.ok) {
       track("email_conversion");
       setUnlocked(true);
-      setSuccessMessage("Email verified. Premium insights unlocked.");
+      setSuccessMessage("Unlocked. Generating report...");
       generatePremiumPDF();
     } else {
-      setSuccessMessage("Something went wrong. Try again.");
+      setSuccessMessage("Something went wrong.");
     }
 
     setLoading(false);
@@ -157,20 +133,16 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 py-16 px-6">
       <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl p-12 space-y-10 border border-white/40">
 
-        <div className="text-center space-y-3">
-          <h1 className="text-4xl font-bold text-indigo-900">
-            Freelance Rate Intelligence
-          </h1>
-          <p className="text-gray-600">
-            Strategic pricing calculator for serious freelancers.
-          </p>
-        </div>
+        <h1 className="text-4xl font-bold text-indigo-900 text-center">
+          Freelance Rate Intelligence
+        </h1>
 
         <div className="space-y-6">
+
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value)}
-            className="w-full p-4 rounded-xl border border-indigo-300 bg-white text-indigo-900 font-semibold shadow-md"
+            className="w-full p-4 rounded-xl border border-indigo-300"
           >
             <option value="INR">INR (₹)</option>
             <option value="USD">USD ($)</option>
@@ -178,12 +150,38 @@ export default function Home() {
             <option value="GBP">GBP (£)</option>
           </select>
 
-          <InputField label={`Desired Monthly Income (${symbol})`} value={desiredIncome} onChange={setDesiredIncome} />
-          <InputField label={`Monthly Expenses (${symbol})`} value={monthlyExpenses} onChange={setMonthlyExpenses} />
-          <InputField label="Working Days per Month" value={workingDays} onChange={setWorkingDays} />
-          <InputField label="Billable Hours per Day" value={billableHours} onChange={setBillableHours} />
-          <InputField label={`Your Current Hourly Rate (${symbol})`} value={currentRate} onChange={setCurrentRate} />
-          <InputField label="Project Estimated Hours" value={projectHours} onChange={setProjectHours} />
+          <InputField
+            label={`Monthly Expenses (${symbol})`}
+            value={monthlyExpenses}
+            onChange={setMonthlyExpenses}
+          />
+
+          <InputField
+            label={`Desired Profit (${symbol})`}
+            value={desiredProfit}
+            onChange={setDesiredProfit}
+          />
+
+          <InputField label="Working Days" value={workingDays} onChange={setWorkingDays} />
+          <InputField label="Hours per Day" value={billableHours} onChange={setBillableHours} />
+
+          {/* 🔥 NEW SLIDER */}
+          <div>
+            <label className="font-semibold">
+              Non-billable Time: {nonBillablePercent}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="60"
+              value={nonBillablePercent}
+              onChange={(e) => setNonBillablePercent(Number(e.target.value))}
+              className="w-full"
+            />
+          </div>
+
+          <InputField label={`Current Rate (${symbol})`} value={currentRate} onChange={setCurrentRate} />
+          <InputField label="Project Hours" value={projectHours} onChange={setProjectHours} />
         </div>
 
         <ResultsCard
@@ -194,38 +192,39 @@ export default function Home() {
           rateGap={rateGap}
           monthlyLoss={monthlyLoss}
           yearlyLoss={yearlyLoss}
+          effectiveHours={effectiveBillableHours}
           unlocked={unlocked}
         />
 
         {!unlocked && (
-          <div className="mt-12 p-10 rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white space-y-6 shadow-xl">
+          <div className="p-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl">
 
-            <h2 className="text-2xl font-semibold text-center">
-              Unlock Premium Pricing Diagnosis
+            <h2 className="text-xl font-semibold text-center">
+              Unlock Full Pricing Breakdown
             </h2>
+
+            <p className="text-sm text-center mt-2">
+              Includes loss analysis, effective rate & strategy insights
+            </p>
 
             <input
               type="email"
-              placeholder="Enter your professional email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-4 rounded-xl text-gray-900"
+              className="w-full p-3 mt-4 rounded text-black"
             />
 
             <button
               onClick={handleUnlock}
-              disabled={loading}
-              className="w-full py-4 rounded-xl font-semibold text-lg bg-white text-indigo-700"
+              className="w-full mt-4 bg-white text-indigo-700 p-3 rounded font-semibold"
             >
-              {loading ? "Processing..." : "Unlock Premium Insights"}
+              {loading ? "Processing..." : "Unlock Report"}
             </button>
 
-            {successMessage && (
-              <p className="text-center text-sm">{successMessage}</p>
-            )}
+            {successMessage && <p className="mt-2 text-center">{successMessage}</p>}
           </div>
         )}
-
       </div>
     </main>
   );
