@@ -9,14 +9,11 @@ import { track } from "@vercel/analytics";
 export default function Home() {
   const [currency, setCurrency] = useState("INR");
 
-  // 🔥 renamed (no logic break)
   const [desiredProfit, setDesiredProfit] = useState("");
   const [monthlyExpenses, setMonthlyExpenses] = useState("");
 
   const [workingDays, setWorkingDays] = useState("");
   const [billableHours, setBillableHours] = useState("");
-
-  // 🔥 NEW
   const [nonBillablePercent, setNonBillablePercent] = useState(30);
 
   const [projectHours, setProjectHours] = useState("");
@@ -37,7 +34,7 @@ export default function Home() {
   const symbol = currencySymbols[currency];
 
   // =============================
-  // 🔥 UPDATED LOGIC (ENHANCED)
+  // LOGIC
   // =============================
 
   const totalRequired =
@@ -66,18 +63,17 @@ export default function Home() {
   const yearlyLoss = monthlyLoss * 12;
 
   // =============================
-  // PDF (ENHANCED)
+  // PDF
   // =============================
 
   const generatePremiumPDF = () => {
     const doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.text("Freelance Pricing Report", 20, 20);
+    doc.setFontSize(20);
+    doc.text("Freelance Pricing Intelligence Report", 20, 20);
 
     doc.setFontSize(12);
-
-    doc.text(`Expenses: ${symbol} ${monthlyExpenses}`, 20, 40);
+    doc.text(`Monthly Expenses: ${symbol} ${monthlyExpenses}`, 20, 40);
     doc.text(`Desired Profit: ${symbol} ${desiredProfit}`, 20, 50);
     doc.text(`Total Target: ${symbol} ${totalRequired}`, 20, 60);
 
@@ -88,7 +84,7 @@ export default function Home() {
     );
 
     doc.text(
-      `Recommended Rate: ${symbol} ${recommendedHourlyRate}/hr`,
+      `Recommended Hourly Rate: ${symbol} ${recommendedHourlyRate}`,
       20,
       100
     );
@@ -96,14 +92,19 @@ export default function Home() {
     doc.text(`Project Price: ${symbol} ${projectPrice}`, 20, 115);
 
     if (rateGap > 0) {
-      doc.text(`Undercharging: ${symbol} ${rateGap}/hr`, 20, 135);
+      doc.text(`Undercharging by: ${symbol} ${rateGap}/hr`, 20, 135);
       doc.text(`Monthly Loss: ${symbol} ${monthlyLoss}`, 20, 145);
+      doc.text(`Yearly Loss: ${symbol} ${yearlyLoss}`, 20, 155);
     }
 
-    doc.save("pricing-report.pdf");
+    doc.save("Freelance-Pricing-Report.pdf");
 
     track("premium_report_downloaded");
   };
+
+  // =============================
+  // EMAIL GATE
+  // =============================
 
   const handleUnlock = async () => {
     if (!email) return;
@@ -113,7 +114,9 @@ export default function Home() {
 
     const res = await fetch("/api/subscribe", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ email }),
     });
 
@@ -123,7 +126,7 @@ export default function Home() {
       setSuccessMessage("Unlocked. Generating report...");
       generatePremiumPDF();
     } else {
-      setSuccessMessage("Something went wrong.");
+      setSuccessMessage("Something went wrong. Try again.");
     }
 
     setLoading(false);
@@ -133,16 +136,23 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 py-16 px-6">
       <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl p-12 space-y-10 border border-white/40">
 
-        <h1 className="text-4xl font-bold text-indigo-900 text-center">
-          Freelance Rate Intelligence
-        </h1>
+        {/* HEADER */}
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-bold text-indigo-900">
+            Freelance Rate Intelligence
+          </h1>
+          <p className="text-gray-600">
+            Calculate your true freelance rate based on real capacity.
+          </p>
+        </div>
 
+        {/* INPUTS */}
         <div className="space-y-6">
 
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value)}
-            className="w-full p-4 rounded-xl border border-indigo-300"
+            className="w-full p-4 rounded-xl border border-indigo-300 bg-white text-indigo-900 font-semibold shadow-md"
           >
             <option value="INR">INR (₹)</option>
             <option value="USD">USD ($)</option>
@@ -151,23 +161,23 @@ export default function Home() {
           </select>
 
           <InputField
-            label={`Monthly Expenses (${symbol})`}
+            label={`Monthly Business Expenses (${symbol})`}
             value={monthlyExpenses}
             onChange={setMonthlyExpenses}
           />
 
           <InputField
-            label={`Desired Profit (${symbol})`}
+            label={`Desired Monthly Profit (${symbol})`}
             value={desiredProfit}
             onChange={setDesiredProfit}
           />
 
-          <InputField label="Working Days" value={workingDays} onChange={setWorkingDays} />
-          <InputField label="Hours per Day" value={billableHours} onChange={setBillableHours} />
+          <InputField label="Working Days per Month" value={workingDays} onChange={setWorkingDays} />
+          <InputField label="Billable Hours per Day" value={billableHours} onChange={setBillableHours} />
 
-          {/* 🔥 NEW SLIDER */}
+          {/* NON BILLABLE SLIDER */}
           <div>
-            <label className="font-semibold">
+            <label className="block mb-2 font-semibold text-gray-800">
               Non-billable Time: {nonBillablePercent}%
             </label>
             <input
@@ -180,10 +190,11 @@ export default function Home() {
             />
           </div>
 
-          <InputField label={`Current Rate (${symbol})`} value={currentRate} onChange={setCurrentRate} />
-          <InputField label="Project Hours" value={projectHours} onChange={setProjectHours} />
+          <InputField label={`Your Current Rate (${symbol})`} value={currentRate} onChange={setCurrentRate} />
+          <InputField label="Project Estimated Hours" value={projectHours} onChange={setProjectHours} />
         </div>
 
+        {/* RESULTS */}
         <ResultsCard
           currencySymbol={symbol}
           totalRequired={totalRequired}
@@ -196,35 +207,41 @@ export default function Home() {
           unlocked={unlocked}
         />
 
+        {/* PREMIUM */}
         {!unlocked && (
-          <div className="p-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl">
+          <div className="mt-12 p-10 rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white space-y-6 shadow-xl">
 
-            <h2 className="text-xl font-semibold text-center">
+            <h2 className="text-2xl font-semibold text-center">
               Unlock Full Pricing Breakdown
             </h2>
 
-            <p className="text-sm text-center mt-2">
-              Includes loss analysis, effective rate & strategy insights
+            <p className="text-sm text-center opacity-90">
+              Includes revenue leakage, effective rate, and strategy insights
             </p>
 
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Enter your professional email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 mt-4 rounded text-black"
+              className="w-full p-4 rounded-xl text-gray-900"
             />
 
             <button
               onClick={handleUnlock}
-              className="w-full mt-4 bg-white text-indigo-700 p-3 rounded font-semibold"
+              disabled={loading}
+              className="w-full py-4 rounded-xl font-semibold text-lg bg-white text-indigo-700"
             >
-              {loading ? "Processing..." : "Unlock Report"}
+              {loading ? "Processing..." : "Unlock Premium Insights"}
             </button>
 
-            {successMessage && <p className="mt-2 text-center">{successMessage}</p>}
+            {successMessage && (
+              <p className="text-center text-sm">{successMessage}</p>
+            )}
+
           </div>
         )}
+
       </div>
     </main>
   );

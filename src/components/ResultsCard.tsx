@@ -1,3 +1,5 @@
+"use client";
+
 type ResultsCardProps = {
   currencySymbol: string;
   totalRequired: number;
@@ -6,6 +8,7 @@ type ResultsCardProps = {
   rateGap: number;
   monthlyLoss: number;
   yearlyLoss: number;
+  effectiveHours: number; // ✅ THIS WAS MISSING
   unlocked: boolean;
 };
 
@@ -17,61 +20,79 @@ export default function ResultsCard({
   rateGap,
   monthlyLoss,
   yearlyLoss,
+  effectiveHours,
   unlocked,
 }: ResultsCardProps) {
   return (
-    <div className="mt-8 p-8 bg-white rounded-2xl shadow-xl space-y-6 border">
+    <div className="mt-10 p-8 bg-white rounded-3xl shadow-2xl border border-gray-100 space-y-8">
 
-      <div>
-        <p className="text-sm text-gray-500 uppercase">Required Monthly Income</p>
-        <p className="text-2xl font-bold text-gray-800">
-          {currencySymbol} {totalRequired}
-        </p>
+      {/* TOP */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div className="p-6 rounded-2xl bg-gray-50 border">
+          <p className="text-xs text-gray-500 uppercase">Required Monthly Revenue</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {currencySymbol} {totalRequired}
+          </p>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-indigo-50 border border-indigo-200">
+          <p className="text-xs text-indigo-600 uppercase">Hourly Rate</p>
+          <p className="text-2xl font-bold text-indigo-700">
+            {currencySymbol} {recommendedHourlyRate} / hr
+          </p>
+        </div>
+
       </div>
 
-      <div>
-        <p className="text-sm text-gray-500 uppercase">Recommended Hourly Rate</p>
-        <p className="text-2xl font-bold text-indigo-600">
-          {currencySymbol} {recommendedHourlyRate} / hour
-        </p>
+      {/* SECOND */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div className="p-6 rounded-2xl bg-gray-50 border">
+          <p className="text-xs text-gray-500 uppercase">Project Price</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {currencySymbol} {projectPrice}
+          </p>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-yellow-50 border border-yellow-200">
+          <p className="text-xs text-yellow-700 uppercase">Effective Hours</p>
+          <p className="text-2xl font-bold text-yellow-800">
+            {Math.round(effectiveHours)} hrs/month
+          </p>
+        </div>
+
       </div>
 
-      <div>
-        <p className="text-sm text-gray-500 uppercase">Suggested Project Price</p>
-        <p className="text-2xl font-bold text-gray-800">
-          {currencySymbol} {projectPrice}
-        </p>
-      </div>
-
-      {/* PREMIUM SECTION */}
-
-      <div className="relative mt-6 p-6 rounded-xl bg-indigo-50 border border-indigo-200">
+      {/* PREMIUM */}
+      <div className="relative p-6 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
 
         {!unlocked && (
-          <div className="absolute inset-0 backdrop-blur-md bg-white/60 flex items-center justify-center rounded-xl">
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-md flex items-center justify-center rounded-2xl text-center px-4">
             <p className="font-semibold text-indigo-800">
-              Premium Pricing Diagnosis Locked
+              🔒 Unlock Premium Diagnosis
             </p>
           </div>
         )}
 
-        <p className="font-semibold text-indigo-800 mb-2">
+        <p className="font-semibold text-indigo-800 mb-3">
           Pricing Diagnosis
         </p>
 
         {rateGap > 0 ? (
           <div className="space-y-1 text-indigo-900">
-            <p>Undercharging by: {currencySymbol} {rateGap}/hour</p>
-            <p>Monthly Revenue Loss: {currencySymbol} {monthlyLoss}</p>
-            <p>Yearly Revenue Loss: {currencySymbol} {yearlyLoss}</p>
+            <p>Undercharging: {currencySymbol} {rateGap}/hr</p>
+            <p>Monthly Loss: {currencySymbol} {monthlyLoss}</p>
+            <p>Yearly Loss: {currencySymbol} {yearlyLoss}</p>
           </div>
         ) : (
           <p className="text-indigo-900">
-            Your pricing structure appears aligned.
+            Your pricing is aligned.
           </p>
         )}
 
       </div>
+
     </div>
   );
 }
