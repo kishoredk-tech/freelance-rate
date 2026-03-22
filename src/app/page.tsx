@@ -34,7 +34,7 @@ export default function Home() {
   const symbol = currencySymbols[currency];
 
   // =============================
-  // LOGIC
+  // CORE LOGIC
   // =============================
 
   const totalRequired =
@@ -63,6 +63,29 @@ export default function Home() {
   const yearlyLoss = monthlyLoss * 12;
 
   // =============================
+  // 🔥 BALANCED PRICING LOGIC
+  // =============================
+
+  const marketRate = Number(currentRate || 0);
+
+  const transitionRate =
+    marketRate && recommendedHourlyRate
+      ? Math.round((marketRate + recommendedHourlyRate) / 2)
+      : 0;
+
+  let pricingPosition = "";
+
+  if (!marketRate) {
+    pricingPosition = "unknown";
+  } else if (recommendedHourlyRate <= marketRate) {
+    pricingPosition = "aligned";
+  } else if (recommendedHourlyRate <= transitionRate) {
+    pricingPosition = "transition";
+  } else {
+    pricingPosition = "underpriced";
+  }
+
+  // =============================
   // PDF
   // =============================
 
@@ -73,7 +96,7 @@ export default function Home() {
     doc.text("Freelance Pricing Intelligence Report", 20, 20);
 
     doc.setFontSize(12);
-    doc.text(`Monthly Expenses: ${symbol} ${monthlyExpenses}`, 20, 40);
+    doc.text(`Expenses: ${symbol} ${monthlyExpenses}`, 20, 40);
     doc.text(`Desired Profit: ${symbol} ${desiredProfit}`, 20, 50);
     doc.text(`Total Target: ${symbol} ${totalRequired}`, 20, 60);
 
@@ -84,17 +107,20 @@ export default function Home() {
     );
 
     doc.text(
-      `Recommended Hourly Rate: ${symbol} ${recommendedHourlyRate}`,
+      `Recommended Rate: ${symbol} ${recommendedHourlyRate}`,
       20,
       100
     );
 
     doc.text(`Project Price: ${symbol} ${projectPrice}`, 20, 115);
 
+    doc.text(`Market Rate: ${symbol} ${marketRate}`, 20, 130);
+    doc.text(`Transition Rate: ${symbol} ${transitionRate}`, 20, 140);
+
     if (rateGap > 0) {
-      doc.text(`Undercharging by: ${symbol} ${rateGap}/hr`, 20, 135);
-      doc.text(`Monthly Loss: ${symbol} ${monthlyLoss}`, 20, 145);
-      doc.text(`Yearly Loss: ${symbol} ${yearlyLoss}`, 20, 155);
+      doc.text(`Undercharging: ${symbol} ${rateGap}/hr`, 20, 160);
+      doc.text(`Monthly Loss: ${symbol} ${monthlyLoss}`, 20, 170);
+      doc.text(`Yearly Loss: ${symbol} ${yearlyLoss}`, 20, 180);
     }
 
     doc.save("Freelance-Pricing-Report.pdf");
@@ -172,10 +198,19 @@ export default function Home() {
             onChange={setDesiredProfit}
           />
 
-          <InputField label="Working Days per Month" value={workingDays} onChange={setWorkingDays} />
-          <InputField label="Billable Hours per Day" value={billableHours} onChange={setBillableHours} />
+          <InputField
+            label="Working Days per Month"
+            value={workingDays}
+            onChange={setWorkingDays}
+          />
 
-          {/* NON BILLABLE SLIDER */}
+          <InputField
+            label="Billable Hours per Day"
+            value={billableHours}
+            onChange={setBillableHours}
+          />
+
+          {/* NON BILLABLE */}
           <div>
             <label className="block mb-2 font-semibold text-gray-800">
               Non-billable Time: {nonBillablePercent}%
@@ -190,8 +225,18 @@ export default function Home() {
             />
           </div>
 
-          <InputField label={`Your Current Rate (${symbol})`} value={currentRate} onChange={setCurrentRate} />
-          <InputField label="Project Estimated Hours" value={projectHours} onChange={setProjectHours} />
+          <InputField
+            label={`Your Current Rate (${symbol})`}
+            value={currentRate}
+            onChange={setCurrentRate}
+          />
+
+          <InputField
+            label="Project Estimated Hours"
+            value={projectHours}
+            onChange={setProjectHours}
+          />
+
         </div>
 
         {/* RESULTS */}
@@ -204,6 +249,9 @@ export default function Home() {
           monthlyLoss={monthlyLoss}
           yearlyLoss={yearlyLoss}
           effectiveHours={effectiveBillableHours}
+          marketRate={marketRate}
+          transitionRate={transitionRate}
+          pricingPosition={pricingPosition}
           unlocked={unlocked}
         />
 
@@ -216,7 +264,7 @@ export default function Home() {
             </h2>
 
             <p className="text-sm text-center opacity-90">
-              Includes revenue leakage, effective rate, and strategy insights
+              Includes pricing zones, revenue leakage & insights
             </p>
 
             <input
